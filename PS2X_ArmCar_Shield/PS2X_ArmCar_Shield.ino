@@ -246,57 +246,49 @@ void loop() {
   
    for (int i = 0; i < SERVOS; i++)
    {
-      // для базового Серво (вправо-влево) меняем направление на зеркальное
-      if (i == 3) {
-        if (value[i] > 130) {
+      if (value[i] > 130) 
+      {
+        // для базового Серво (вправо-влево) меняем направление на зеркальное
+        // для остальных Серво приводов делаем как и раньше было
+        if (i == 3) { 
           if (currentAngle[i] > MIN[i]) 
             currentAngle[i] -= 1;
-        } else {
+        } else if (currentAngle[i] < MAX[i]) 
+          currentAngle[i] += 1;
+//          Serial.print("value"); 
+//          Serial.print(i); 
+//          Serial.print(":"); 
+//          Serial.println(value[i]);
+          switch(i)
+          {
+              
+            case 0:  myservo1.write(currentAngle[i]);break;
+            case 1:  myservo2.write(currentAngle[i]);break;
+            case 2:  myservo3.write(currentAngle[i]);break;
+            case 3:  myservo4.write(currentAngle[i]);break;
+          }   
+      } 
+    else if (value[i] < 120) 
+    {
+        // для базового Серво (вправо-влево) меняем направление на зеркальное
+        // для остальных Серво приводов делаем как и раньше было
+        if (i == 3) { 
           if (currentAngle[i] < MAX[i]) 
             currentAngle[i] += 1;
-        }
-        switch(i)
-        {    
-          case 0:  myservo1.write(currentAngle[i]);break;
-          case 1:  myservo2.write(currentAngle[i]);break;
-          case 2:  myservo3.write(currentAngle[i]);break;
-          case 3:  myservo4.write(currentAngle[i]);break;
-        }   
-      } else {
-        // для остальных Серво приводов делаем как и раньше было
-        if (value[i] > 130) 
-        {
-          if (currentAngle[i] < MAX[i]) 
-          currentAngle[i]+=1;
-  //          Serial.print("value"); 
-  //          Serial.print(i); 
-  //          Serial.print(":"); 
-  //          Serial.println(value[i]);
-            switch(i)
-            {
-                
-              case 0:  myservo1.write(currentAngle[i]);break;
-              case 1:  myservo2.write(currentAngle[i]);break;
-              case 2:  myservo3.write(currentAngle[i]);break;
-              case 3:  myservo4.write(currentAngle[i]);break;
-            }   
-        } 
-      else if (value[i] < 120) 
+        } else if (currentAngle[i] > MIN[i]) 
+          currentAngle[i] -= 1;
+//        Serial.print("value"); 
+//        Serial.print(i); 
+//        Serial.print(":"); 
+//        Serial.println(value[i]);
+       switch(i)
       {
-        if (currentAngle[i] > MIN[i]) currentAngle[i]-=1;
-  //        Serial.print("value"); 
-  //        Serial.print(i); 
-  //        Serial.print(":"); 
-  //        Serial.println(value[i]);
-         switch(i)
-        {
-         case 0:  myservo1.write(currentAngle[i]);break;
-         case 1:  myservo2.write(currentAngle[i]);break;
-         case 2:  myservo3.write(currentAngle[i]);break;
-         case 3:  myservo4.write(currentAngle[i]);break;
-        }   
-      }
-    }  
+       case 0:  myservo1.write(currentAngle[i]);break;
+       case 1:  myservo2.write(currentAngle[i]);break;
+       case 2:  myservo3.write(currentAngle[i]);break;
+       case 3:  myservo4.write(currentAngle[i]);break;
+      }   
+    }
   }  
   delay(10);
 }
