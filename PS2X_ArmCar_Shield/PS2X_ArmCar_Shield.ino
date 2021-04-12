@@ -21,6 +21,7 @@
 #define pressures   true 
 #define rumble      true
 
+//todo Надо все китайские комментарии переписать на русский или английский.
 PS2X ps2x; // create PS2 Controller Class
 
 //right now, the library does NOT support hot pluggable controllers, meaning 
@@ -42,20 +43,22 @@ const int SERVOS = 4;  //舵机数4个
 const int ACC = 10; // the accurancy of the potentiometer value before idle starts counting
 int  value[SERVOS], idle[SERVOS], currentAngle[SERVOS], MIN[SERVOS], MAX[SERVOS], INITANGLE[SERVOS], previousAngle[SERVOS],ANA[SERVOS];
 
-int Left_motor=8;     //左电机(IN3) 输出0  前进   输出1 后退
-int Left_motor_pwm=9;     //左电机PWM调速
+//todo Надо все управление мотор-колесами переписать на данные переменные (сделать константами), а то везьде используются "магические" числа, но не эти переменные.
+//todo Надо все методы управления мотор-колесами и их инициализацию переписать на C++ класс, а здесь использовать.
+int Left_motor=8;     //Левый мотор (IN3) выход 0 - вперед, выход 1 - назад
+int Left_motor_pwm=9;     //ШИМ-регулировка скорости левого мотора
 
-int Right_motor_pwm=10;    // 右电机PWM调速
-int Right_motor=11;    // 右电机后退(IN1)  输出0  前进   输出1 后退
+int Right_motor_pwm=10;    // ШИМ-регулировка скорости правого мотора
+int Right_motor=11;    // Правый мотор назад (IN1) выход 0 - вперед, выход 1 - назад
 
 
 void setup(){
   Serial.begin(57600);
   
-   myservo1.attach(2);  //手爪电机
-   myservo2.attach(7);  //上臂电机
-   myservo3.attach(12); //下臂电机
-   myservo4.attach(13); //底座电机   
+   myservo1.attach(2);  // Когтевой двигатель
+   myservo2.attach(7);  // Мотор верхнего плеча (правый Серво)
+   myservo3.attach(12); // Двигатель нижнего рычага (левый Серво)
+   myservo4.attach(13); // Базовый мотор (Серво внизу, вправо-влево) 
    
   //-----电机IO口定-
   pinMode( 8, OUTPUT);
@@ -168,10 +171,10 @@ void loop() {
     {  
         stop();  
     }
-    if(ps2x.Button(PSB_R1)){                          //侧面开关右R1
+    if(ps2x.Button(PSB_R1)){                          // Боковой переключатель правый R1
       R_Speed = 0;                 
     }
-    if(ps2x.Button(PSB_L1)){                          //侧面开关左L1
+    if(ps2x.Button(PSB_L1)){                          // Боковой переключатель левый L1
       L_Speed = 0;               
     } 
     if(ps2x.Button(PSB_PAD_LEFT)) //方向按键左侧按下  
@@ -245,8 +248,13 @@ void loop() {
    {
       if (value[i] > 130) 
       {
-        if (currentAngle[i] < MAX[i]) 
-        currentAngle[i]+=1;
+        // для базового Серво (вправо-влево) меняем направление на зеркальное
+        // для остальных Серво приводов делаем как и раньше было
+        if (i == 3) { 
+          if (currentAngle[i] > MIN[i]) 
+            currentAngle[i] -= 1;
+        } else if (currentAngle[i] < MAX[i]) 
+          currentAngle[i] += 1;
 //          Serial.print("value"); 
 //          Serial.print(i); 
 //          Serial.print(":"); 
@@ -262,7 +270,13 @@ void loop() {
       } 
     else if (value[i] < 120) 
     {
-      if (currentAngle[i] > MIN[i]) currentAngle[i]-=1;
+        // для базового Серво (вправо-влево) меняем направление на зеркальное
+        // для остальных Серво приводов делаем как и раньше было
+        if (i == 3) { 
+          if (currentAngle[i] < MAX[i]) 
+            currentAngle[i] += 1;
+        } else if (currentAngle[i] > MIN[i]) 
+          currentAngle[i] -= 1;
 //        Serial.print("value"); 
 //        Serial.print(i); 
 //        Serial.print(":"); 
@@ -274,7 +288,7 @@ void loop() {
        case 2:  myservo3.write(currentAngle[i]);break;
        case 3:  myservo4.write(currentAngle[i]);break;
       }   
-    }  
+    }
   }  
   delay(10);
 }
@@ -335,4 +349,3 @@ void stop()
   digitalWrite(11, LOW);
   digitalWrite(10, LOW); 
 }
-
